@@ -1,24 +1,80 @@
-import React from 'react';
+import React from "react";
+import { connect } from "react-redux";
+
+import { addSmurf } from "../actions";
 
 class AddForm extends React.Component {
+  state = {
+    name: "",
+    position: "",
+    nickname: "",
+    description: "",
+  };
 
-    render() {
-        return(<section>
-            <h2>Add Smurf</h2>
-            <form>
-                <div className="form-group">
-                    <label htmlFor="name">Name:</label><br/>
-                    <input onChange={this.handleChange} name="name" id="name" />
-                </div>
+  handleChange = (e) => {
+    this.setState({ ...this.state, [e.target.name]: e.target.value });
+  };
 
-                <div data-testid="errorAlert" className="alert alert-danger" role="alert">Error: </div>
-                <button>Submit Smurf</button>
-            </form>
-        </section>);
+  onSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const addData = await this.props.addSmurf(this.state);
+      console.log(addData);
+    } catch (err) {
+      console.log(err);
     }
+  };
+
+  render() {
+    console.log(this.props.error);
+    return (
+      <section>
+        <h2>Add Smurf</h2>
+        <form onSubmit={this.onSubmit}>
+          <div className="form-group">
+            <label htmlFor="name">Name:</label>
+            <br />
+            <input onChange={this.handleChange} name="name" id="name" />
+            <label htmlFor="position">Position:</label>
+            <br />
+            <input onChange={this.handleChange} name="position" id="position" />
+            <label htmlFor="nickname">Nickname:</label>
+            <br />
+            <input onChange={this.handleChange} name="nickname" id="nickname" />
+            <label htmlFor="description">Description:</label>
+            <br />
+            <input
+              onChange={this.handleChange}
+              name="description"
+              id="description"
+            />
+          </div>
+          {this.props.error.length > 1 ? (
+            <div
+              data-testid="errorAlert"
+              className="alert alert-danger"
+              role="alert"
+            >
+              Error: {this.props.error}
+            </div>
+          ) : null}
+
+          <button type="submit">Submit Smurf</button>
+        </form>
+      </section>
+    );
+  }
 }
 
-export default AddForm;
+const mapStateToProps = (state) => {
+  return {
+    smurfs: state.smurfs,
+    isFetching: state.isFetching,
+    error: state.error,
+  };
+};
+
+export default connect(mapStateToProps, { addSmurf })(AddForm);
 
 //Task List:
 //1. Add in all necessary import components and library methods.
